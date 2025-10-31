@@ -25,42 +25,63 @@ class ProductsPage(BasePage):
         
     def add_item_to_cart(self, product_id: str):
         """Add specific product to cart by ID."""
+        # Wait for the add button to be present and clickable
+        button_locator = (By.ID, f"add-to-cart-{product_id}")
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(button_locator)
+        )
+        
         # Get current cart count
         current_count = self.get_cart_count()
         
         # Click add to cart button
-        button_locator = (By.ID, f"add-to-cart-{product_id}")
         self.click(*button_locator)
         
-        # Wait for cart badge to update (if going from 0 to 1, wait for badge to appear)
-        if current_count == 0:
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(self.CART_BADGE)
+        # Wait a brief moment for the action to process
+        import time
+        time.sleep(0.5)
+        
+        # Verify the button changed to remove button (more reliable check)
+        remove_button_locator = (By.ID, f"remove-{product_id}")
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(remove_button_locator)
             )
-        else:
-            # Wait for count to increment
-            WebDriverWait(self.driver, 10).until(
-                lambda driver: self.get_cart_count() > current_count
-            )
+        except:
+            # Fallback: check if cart count increased
+            new_count = self.get_cart_count()
+            if new_count <= current_count:
+                raise Exception(f"Failed to add item {product_id} to cart")
         
     def remove_item_from_cart(self, product_id: str):
         """Remove specific product from cart."""
+        # Wait for remove button to be clickable
+        button_locator = (By.ID, f"remove-{product_id}")
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(button_locator)
+        )
+        
         # Get current cart count
         current_count = self.get_cart_count()
         
         # Click remove button
-        button_locator = (By.ID, f"remove-{product_id}")
         self.click(*button_locator)
         
-        # Wait for cart count to decrease or badge to disappear
-        if current_count == 1:
-            WebDriverWait(self.driver, 10).until(
-                EC.invisibility_of_element_located(self.CART_BADGE)
+        # Wait for removal to complete
+        import time
+        time.sleep(0.5)
+        
+        # Verify button changed back to add button
+        add_button_locator = (By.ID, f"add-to-cart-{product_id}")
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(add_button_locator)
             )
-        else:
-            WebDriverWait(self.driver, 10).until(
-                lambda driver: self.get_cart_count() < current_count
-            )
+        except:
+            # Fallback: check if cart count decreased
+            new_count = self.get_cart_count()
+            if current_count > 0 and new_count >= current_count:
+                raise Exception(f"Failed to remove item {product_id} from cart")
         
     def get_cart_count(self) -> int:
         """Get number of items in cart."""
