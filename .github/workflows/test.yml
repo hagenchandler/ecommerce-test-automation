@@ -12,7 +12,7 @@ on:
 jobs:
   selenium-tests:
     name: Selenium Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -62,7 +62,7 @@ jobs:
     
   playwright-tests:
     name: Playwright Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -134,7 +134,7 @@ jobs:
     
   smoke-tests:
     name: Smoke Tests (Fast)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
     - name: Checkout code
@@ -172,7 +172,7 @@ jobs:
 
   comparison-tests:
     name: Performance Comparison
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
     - name: Checkout code
