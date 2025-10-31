@@ -25,29 +25,51 @@ class ProductsPage(BasePage):
         
     def add_item_to_cart(self, product_id: str):
         """Add specific product to cart by ID."""
+        # Get current cart count
+        current_count = self.get_cart_count()
+        
+        # Click add to cart button
         button_locator = (By.ID, f"add-to-cart-{product_id}")
         self.click(*button_locator)
-        # Wait for button to change to "remove" (indicates item added)
-        remove_button_locator = (By.ID, f"remove-{product_id}")
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(remove_button_locator)
-        )
+        
+        # Wait for cart badge to update (if going from 0 to 1, wait for badge to appear)
+        if current_count == 0:
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(self.CART_BADGE)
+            )
+        else:
+            # Wait for count to increment
+            WebDriverWait(self.driver, 10).until(
+                lambda driver: self.get_cart_count() > current_count
+            )
         
     def remove_item_from_cart(self, product_id: str):
         """Remove specific product from cart."""
+        # Get current cart count
+        current_count = self.get_cart_count()
+        
+        # Click remove button
         button_locator = (By.ID, f"remove-{product_id}")
         self.click(*button_locator)
-        # Wait for button to change to "add-to-cart" (indicates item removed)
-        add_button_locator = (By.ID, f"add-to-cart-{product_id}")
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(add_button_locator)
-        )
+        
+        # Wait for cart count to decrease or badge to disappear
+        if current_count == 1:
+            WebDriverWait(self.driver, 10).until(
+                EC.invisibility_of_element_located(self.CART_BADGE)
+            )
+        else:
+            WebDriverWait(self.driver, 10).until(
+                lambda driver: self.get_cart_count() < current_count
+            )
         
     def get_cart_count(self) -> int:
         """Get number of items in cart."""
-        if not self.is_visible(*self.CART_BADGE, timeout=2):
-            return 0
-        return int(self.get_text(*self.CART_BADGE))
+        try:
+            if self.is_visible(*self.CART_BADGE, timeout=1):
+                return int(self.get_text(*self.CART_BADGE))
+        except:
+            pass
+        return 0
         
     def go_to_cart(self):
         """Navigate to cart page."""
