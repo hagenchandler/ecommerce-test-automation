@@ -272,12 +272,12 @@ IMPLICIT_WAIT = 10  # Implicit wait (seconds)
 
 This project includes a complete GitHub Actions workflow (`.github/workflows/test.yml`) that:
 
-1. ✅ Runs on every push and pull request
-2. ✅ Tests across Python 3.9, 3.10, and 3.11
-3. ✅ Executes both Selenium and Playwright tests
-4. ✅ Tests across multiple browsers
-5. ✅ Generates and uploads test reports as artifacts
-6. ✅ Runs daily smoke tests automatically
+1. Runs on every push and pull request
+2. Tests across Python 3.9, 3.10, and 3.11
+3. Executes both Selenium and Playwright tests
+4. Tests across multiple browsers
+5. Generates and uploads test reports as artifacts
+6. Runs daily smoke tests automatically
 
 ## Performance Benchmarks
 
