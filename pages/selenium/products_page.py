@@ -63,16 +63,16 @@ class ProductsPage(BasePage):
         
     def go_to_cart(self):
         """Navigate to cart page."""
-        # Store current URL to detect change
-        current_url = self.driver.current_url
-        
-        # Click cart link
-        self.click(*self.CART_LINK)
-        
-        # Wait for URL to change (navigation happened)
-        WebDriverWait(self.driver, 10).until(
-            lambda driver: driver.current_url != current_url
+        # Wait for cart link to be clickable
+        cart_link = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.CART_LINK)
         )
         
-        # Additional wait for page to stabilize
-        time.sleep(0.5)
+        # Click cart link
+        cart_link.click()
+        
+        # Wait for page to load - check for cart-specific element
+        from selenium.webdriver.common.by import By
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "cart_list"))
+        )

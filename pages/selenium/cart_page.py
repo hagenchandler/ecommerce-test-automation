@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pages.selenium.base_page import BasePage
+import time
 
 
 class CartPage(BasePage):
@@ -42,17 +43,23 @@ class CartPage(BasePage):
         """Return to products page."""
         self.wait_for_cart_to_load()
         self.click(*self.CONTINUE_SHOPPING)
+        # Wait for products page to load
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "inventory_list"))
+        )
         
     def remove_item(self, product_id: str):
         """Remove item from cart."""
         self.wait_for_cart_to_load()
         button_locator = (By.ID, f"remove-{product_id}")
-        # Wait for the remove button to be present
+        
+        # Wait for the remove button to be clickable
         WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(button_locator)
+            EC.element_to_be_clickable(button_locator)
         )
+        
+        # Click the button
         self.click(*button_locator)
-        # Wait for the item to be removed
-        WebDriverWait(self.driver, 10).until(
-            EC.staleness_of(self.find_element(*button_locator))
-        )
+        
+        # Wait for item to be removed from DOM
+        time.sleep(1)
