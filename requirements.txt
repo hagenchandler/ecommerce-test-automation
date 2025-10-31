@@ -5,7 +5,6 @@ pytest-html==4.1.1
 
 # Selenium
 selenium==4.15.2
-webdriver-manager==4.0.1
 
 # Playwright
 playwright==1.40.0

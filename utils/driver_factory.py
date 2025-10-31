@@ -1,11 +1,5 @@
 """Selenium WebDriver factory for browser initialization."""
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.edge.service import Service as EdgeService
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from utils.config import config
 
 class DriverFactory:
@@ -45,8 +39,8 @@ class DriverFactory:
         options.add_argument("--disable-gpu")
         options.add_argument(f"--window-size={config.VIEWPORT['width']},{config.VIEWPORT['height']}")
         
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
+        # Selenium 4.6+ has built-in driver management
+        driver = webdriver.Chrome(options=options)
         driver.implicitly_wait(config.SELENIUM_IMPLICIT_WAIT)
         driver.set_page_load_timeout(config.SELENIUM_PAGE_LOAD_TIMEOUT)
         return driver
@@ -60,8 +54,8 @@ class DriverFactory:
         options.add_argument(f"--width={config.VIEWPORT['width']}")
         options.add_argument(f"--height={config.VIEWPORT['height']}")
         
-        service = FirefoxService(GeckoDriverManager().install())
-        driver = webdriver.Firefox(service=service, options=options)
+        # Selenium 4.6+ has built-in driver management
+        driver = webdriver.Firefox(options=options)
         driver.implicitly_wait(config.SELENIUM_IMPLICIT_WAIT)
         driver.set_page_load_timeout(config.SELENIUM_PAGE_LOAD_TIMEOUT)
         return driver
@@ -76,8 +70,8 @@ class DriverFactory:
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument(f"--window-size={config.VIEWPORT['width']},{config.VIEWPORT['height']}")
         
-        service = EdgeService(EdgeChromiumDriverManager().install())
-        driver = webdriver.Edge(service=service, options=options)
+        # Selenium 4.6+ has built-in driver management
+        driver = webdriver.Edge(options=options)
         driver.implicitly_wait(config.SELENIUM_IMPLICIT_WAIT)
         driver.set_page_load_timeout(config.SELENIUM_PAGE_LOAD_TIMEOUT)
         return driver
