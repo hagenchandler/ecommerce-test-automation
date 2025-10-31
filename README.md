@@ -2,6 +2,8 @@
 
 A comprehensive test automation framework demonstrating UI testing capabilities with both Selenium WebDriver and Playwright, featuring 28 automated test cases with 100% pass rate.
 
+![Full Page Screenshot](screenshots/Test_Results.png)
+
 ## Project Overview
 
 This framework automates end-to-end testing for [SauceDemo](https://www.saucedemo.com/), a demo e-commerce application, showcasing professional QA automation practices including:
