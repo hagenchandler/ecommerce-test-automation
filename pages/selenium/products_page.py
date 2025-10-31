@@ -26,6 +26,9 @@ class ProductsPage(BasePage):
         
     def add_item_to_cart(self, product_id: str):
         """Add specific product to cart by ID."""
+        # Get current cart count before adding
+        initial_count = self.get_cart_count()
+        
         # Wait for the add button to be present and clickable
         button_locator = (By.ID, f"add-to-cart-{product_id}")
         add_button = WebDriverWait(self.driver, 10).until(
@@ -35,8 +38,12 @@ class ProductsPage(BasePage):
         # Click add to cart button
         add_button.click()
         
-        # Simply wait a moment for the DOM to update
-        time.sleep(1)
+        # Wait for cart badge to update
+        expected_count = initial_count + 1
+        WebDriverWait(self.driver, 10).until(
+            lambda d: self.get_cart_count() == expected_count,
+            message=f"Cart count did not update to {expected_count}"
+        )
         
     def remove_item_from_cart(self, product_id: str):
         """Remove specific product from cart."""
@@ -55,11 +62,13 @@ class ProductsPage(BasePage):
     def get_cart_count(self) -> int:
         """Get number of items in cart."""
         try:
-            if self.is_visible(*self.CART_BADGE, timeout=1):
-                return int(self.get_text(*self.CART_BADGE))
+            # Wait briefly for badge to be visible
+            badge_element = WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located(self.CART_BADGE)
+            )
+            return int(badge_element.text)
         except:
-            pass
-        return 0
+            return 0
         
     def go_to_cart(self):
         """Navigate to cart page."""
