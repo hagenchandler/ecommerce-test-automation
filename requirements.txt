@@ -1,0 +1,18 @@
+# Testing frameworks
+pytest==7.4.3
+pytest-xdist==3.5.0
+pytest-html==4.1.1
+
+# Selenium
+selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Playwright
+playwright==1.40.0
+pytest-playwright==0.4.3
+
+# API testing
+requests==2.31.0
+
+# Utilities
+python-dotenv==1.0.0
