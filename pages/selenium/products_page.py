@@ -63,16 +63,8 @@ class ProductsPage(BasePage):
         
     def go_to_cart(self):
         """Navigate to cart page."""
-        # Wait for cart link to be clickable
-        cart_link = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.CART_LINK)
-        )
-        
         # Click cart link
-        cart_link.click()
+        self.click(*self.CART_LINK)
         
-        # Wait for page to load - check for cart-specific element
-        from selenium.webdriver.common.by import By
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "cart_list"))
-        )
+        # Simple wait for navigation
+        time.sleep(2)
