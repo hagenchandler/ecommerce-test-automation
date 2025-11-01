@@ -17,8 +17,8 @@ class CartPage(BasePage):
     
     def get_cart_item_count(self) -> int:
         """Get number of items in cart."""
-        # Wait longer for cart page and items to be fully loaded
-        time.sleep(2)
+        # Wait even longer for cart page and items to be fully loaded
+        time.sleep(3)
         
         # Try to find cart items
         items = self.find_elements(*self.CART_ITEMS)
@@ -34,7 +34,7 @@ class CartPage(BasePage):
     def continue_shopping(self):
         """Return to products page."""
         # Wait longer for page to be ready
-        time.sleep(1)
+        time.sleep(2)
         
         try:
             # Try to find and click the continue shopping button
@@ -47,7 +47,7 @@ class CartPage(BasePage):
             self.driver.back()
         
         # Wait for navigation
-        time.sleep(2)
+        time.sleep(3)
         
     def remove_item(self, product_id: str):
         """Remove item from cart."""

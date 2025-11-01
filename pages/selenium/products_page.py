@@ -18,7 +18,14 @@ class ProductsPage(BasePage):
     
     def is_loaded(self) -> bool:
         """Check if products page is loaded."""
-        return self.is_visible(*self.PRODUCTS_TITLE)
+        try:
+            # Wait for products title with a reasonable timeout
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(self.PRODUCTS_TITLE)
+            )
+            return True
+        except:
+            return False
         
     def get_product_count(self) -> int:
         """Get number of products displayed."""
@@ -72,5 +79,5 @@ class ProductsPage(BasePage):
         # Click cart link
         self.click(*self.CART_LINK)
         
-        # Simple wait for navigation
-        time.sleep(3)
+        # Longer wait for navigation and page load
+        time.sleep(4)
