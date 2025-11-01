@@ -91,9 +91,7 @@ jobs:
         pip install -r requirements.txt
     
     - name: Install Playwright browsers
-      run: |
-        playwright install ${{ matrix.browser }}
-        playwright install-deps ${{ matrix.browser }}
+      run: python -m playwright install --with-deps ${{ matrix.browser }}
     
     - name: Run Playwright tests
       run: |
@@ -112,7 +110,7 @@ jobs:
         path: |
           reports/
           screenshots/
-          videos/   
+          videos/
 
   smoke-tests:
     name: Smoke Tests (Fast)
