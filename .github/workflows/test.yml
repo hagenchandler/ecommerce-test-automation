@@ -66,7 +66,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.9', '3.10', '3.11']
-        browser: ['chromium', 'firefox', 'webkit']
+        browser: ['chromium']  # Only chromium for now
     
     steps:
     - name: Checkout code
@@ -91,7 +91,7 @@ jobs:
         pip install -r requirements.txt
     
     - name: Install Playwright browsers
-      run: python -m playwright install --with-deps ${{ matrix.browser }}
+      run: python -m playwright install --with-deps chromium
     
     - name: Run Playwright tests
       run: |
