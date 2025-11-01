@@ -19,7 +19,6 @@ class ProductsPage(BasePage):
     def is_loaded(self) -> bool:
         """Check if products page is loaded."""
         try:
-            # Wait for products title with a reasonable timeout
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located(self.PRODUCTS_TITLE)
             )
@@ -33,47 +32,23 @@ class ProductsPage(BasePage):
         
     def add_item_to_cart(self, product_id: str):
         """Add specific product to cart by ID."""
-        # First check if item is already in cart (remove button exists)
-        remove_button_locator = (By.ID, f"remove-{product_id}")
-        
-        # Check if remove button already exists (item already in cart)
-        remove_buttons = self.find_elements(*remove_button_locator)
-        if len(remove_buttons) > 0:
-            return  # Item already in cart, nothing to do
-        
-        # Wait for the add button to be present and clickable
         button_locator = (By.ID, f"add-to-cart-{product_id}")
-        add_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(button_locator)
-        )
-        
-        # Click add to cart button
-        add_button.click()
-        
-        # Wait for button to change to "remove" button  
         WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(remove_button_locator),
-            message=f"Remove button for {product_id} did not appear after adding to cart"
-        )
+            EC.element_to_be_clickable(button_locator)
+        ).click()
+        time.sleep(1)
         
     def remove_item_from_cart(self, product_id: str):
         """Remove specific product from cart."""
-        # Wait for remove button to be clickable
         button_locator = (By.ID, f"remove-{product_id}")
-        remove_button = WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(button_locator)
-        )
-        
-        # Click remove button
-        remove_button.click()
-        
-        # Wait for removal to complete
+        ).click()
         time.sleep(1)
         
     def get_cart_count(self) -> int:
         """Get number of items in cart."""
         try:
-            # Wait briefly for badge to be visible
             badge_element = WebDriverWait(self.driver, 2).until(
                 EC.presence_of_element_located(self.CART_BADGE)
             )
@@ -83,8 +58,5 @@ class ProductsPage(BasePage):
         
     def go_to_cart(self):
         """Navigate to cart page."""
-        # Click cart link
         self.click(*self.CART_LINK)
-        
-        # Longer wait for navigation and page load
         time.sleep(4)
