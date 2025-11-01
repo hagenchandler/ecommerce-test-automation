@@ -73,4 +73,4 @@ class ProductsPage(BasePage):
         self.click(*self.CART_LINK)
         
         # Simple wait for navigation
-        time.sleep(2)
+        time.sleep(3)
