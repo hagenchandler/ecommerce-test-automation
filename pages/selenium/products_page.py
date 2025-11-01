@@ -26,9 +26,6 @@ class ProductsPage(BasePage):
         
     def add_item_to_cart(self, product_id: str):
         """Add specific product to cart by ID."""
-        # Get current cart count before adding
-        initial_count = self.get_cart_count()
-        
         # Wait for the add button to be present and clickable
         button_locator = (By.ID, f"add-to-cart-{product_id}")
         add_button = WebDriverWait(self.driver, 10).until(
@@ -38,11 +35,11 @@ class ProductsPage(BasePage):
         # Click add to cart button
         add_button.click()
         
-        # Wait for cart badge to update
-        expected_count = initial_count + 1
+        # Wait for button to change to "remove" button
+        remove_button_locator = (By.ID, f"remove-{product_id}")
         WebDriverWait(self.driver, 10).until(
-            lambda d: self.get_cart_count() == expected_count,
-            message=f"Cart count did not update to {expected_count}"
+            EC.presence_of_element_located(remove_button_locator),
+            message=f"Remove button for {product_id} did not appear after adding to cart"
         )
         
     def remove_item_from_cart(self, product_id: str):
