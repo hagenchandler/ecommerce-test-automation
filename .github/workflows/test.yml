@@ -10,26 +10,108 @@ on:
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
-   selenium-tests:
-      - name: Run Selenium tests
-        run: |
-          pytest -m selenium -v -n 4 \
-            --html=reports/selenium-${{ matrix.browser }}-report.html \
-            --self-contained-html
-        env:
-          HEADLESS: true
-          SELENIUM_BROWSER: ${{ matrix.browser }}
-      
-    playwright-tests:
-      - name: Run Playwright tests
-        run: |
-          pytest -m playwright -v -n 4 \
-            --html=reports/playwright-${{ matrix.browser }}-report.html \
-            --self-contained-html
-        env:
-          HEADLESS: true
-          PLAYWRIGHT_BROWSER: ${{ matrix.browser }}   
-
+  selenium-tests:
+    name: Selenium Tests
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+        browser: ['chrome', 'firefox']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run Selenium tests
+      run: |
+        pytest -m selenium -v -n 4 \
+          --html=reports/selenium-${{ matrix.browser }}-report.html \
+          --self-contained-html
+      env:
+        HEADLESS: true
+        SELENIUM_BROWSER: ${{ matrix.browser }}
+    
+    - name: Upload Selenium test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: selenium-results-${{ matrix.python-version }}-${{ matrix.browser }}
+        path: |
+          reports/
+          screenshots/
+    
+  playwright-tests:
+    name: Playwright Tests
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+        browser: ['chromium', 'firefox', 'webkit']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Install Playwright browsers
+      run: playwright install --with-deps ${{ matrix.browser }}
+    
+    - name: Run Playwright tests
+      run: |
+        pytest -m playwright -v -n 4 \
+          --html=reports/playwright-${{ matrix.browser }}-report.html \
+          --self-contained-html
+      env:
+        HEADLESS: true
+        PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
+    
+    - name: Upload Playwright test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-results-${{ matrix.python-version }}-${{ matrix.browser }}
+        path: |
+          reports/
+          screenshots/
+          videos/
+    
   smoke-tests:
     name: Smoke Tests (Fast)
     runs-on: ubuntu-22.04
@@ -74,7 +156,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
