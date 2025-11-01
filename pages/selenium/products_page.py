@@ -35,36 +35,26 @@ class ProductsPage(BasePage):
         """Add specific product to cart by ID."""
         # First check if item is already in cart (remove button exists)
         remove_button_locator = (By.ID, f"remove-{product_id}")
-        try:
-            # If remove button already exists, item is already in cart
-            existing_remove = self.driver.find_element(*remove_button_locator)
-            if existing_remove:
-                return  # Item already in cart, nothing to do
-        except:
-            pass  # Remove button doesn't exist, proceed with adding
+        
+        # Check if remove button already exists (item already in cart)
+        remove_buttons = self.find_elements(*remove_button_locator)
+        if len(remove_buttons) > 0:
+            return  # Item already in cart, nothing to do
         
         # Wait for the add button to be present and clickable
         button_locator = (By.ID, f"add-to-cart-{product_id}")
-        try:
-            add_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(button_locator)
-            )
-            
-            # Click add to cart button
-            add_button.click()
-            
-            # Wait for button to change to "remove" button
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(remove_button_locator),
-                message=f"Remove button for {product_id} did not appear after adding to cart"
-            )
-        except Exception as e:
-            # If we can't add, check if it's because item is already in cart
-            try:
-                self.driver.find_element(*remove_button_locator)
-                return  # Item is in cart, that's ok
-            except:
-                raise e  # Re-raise original error
+        add_button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(button_locator)
+        )
+        
+        # Click add to cart button
+        add_button.click()
+        
+        # Wait for button to change to "remove" button  
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(remove_button_locator),
+            message=f"Remove button for {product_id} did not appear after adding to cart"
+        )
         
     def remove_item_from_cart(self, product_id: str):
         """Remove specific product from cart."""
